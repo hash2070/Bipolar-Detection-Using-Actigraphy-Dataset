@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-04-16T04:15:30.506949",
+  "approach": "3A - Statistical Significance Testing",
+  "analysis": "Activity Variability (bipolar vs unipolar)",
+  "results": {
+    "bipolar_n": 8,
+    "unipolar_n": 15,
+    "bipolar_mean": 0.20265714964938006,
+    "bipolar_std": 0.1038398803772017,
+    "unipolar_mean": 0.20807491810518808,
+    "unipolar_std": 0.07588319346898728,
+    "t_statistic": -0.13648708176094962,
+    "t_statistic_welch": -0.12263507454885313,
+    "p_value": 0.8927362450920298,
+    "p_value_welch": 0.9046380095607709,
+    "p_value_mannwhitney": 0.7763310857940013,
+    "cohens_d": -0.059753705618373114,
+    "effect_size_interpretation": "negligible",
+    "is_significant": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-04-16T04:22:55.179042",
+  "approach": "1B - Feature Engineering + XGBoost",
+  "num_participants": 23,
+  "bipolar_count": 8,
+  "unipolar_count": 15,
+  "loocv_accuracy": 0.391304347826087,
+  "roc_auc": 0.21666666666666667,
+  "confusion_matrix": [
+    [
+      0,
+      8
+    ],
+    [
+      6,
+      9
+    ]
+  ],
+  "top_features": [
+    "activity_min",
+    "high_activity_fraction",
+    "activity_iqr",
+    "daily_max_variability",
+    "day_variability",
+    "autocorr_lag2",
+    "activity_mean",
+    "num_peaks",
+    "mean_daily_std",
+    "autocorr_lag1"
+  ]
+}

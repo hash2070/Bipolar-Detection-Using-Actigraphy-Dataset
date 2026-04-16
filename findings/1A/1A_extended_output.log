@@ -1,0 +1,24 @@
+
+Device: cuda
+Hyperparameter Grid:
+  Window sizes: ['24hr', '48hr', '72hr']
+  Weight decays: [1e-05, 0.0001, 0.001]
+  Dropout rates: [0.2, 0.4, 0.6]
+  Total configs: 27 = 27
+
+================================================================================
+APPROACH 1A EXTENDED: Hyperparameter Grid Search
+================================================================================
+
+[Window: 24hr (1440 min)]
+Traceback (most recent call last):
+  File "f:\CU_Boulder\CSCI-5922_Deep_Learning_Neural_Networks\Projects\Bipolar-Detection-Using-Actigraphy-Dataset\train_exp2_multiscale_extended.py", line 291, in <module>
+    searcher.run_grid_search()
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "f:\CU_Boulder\CSCI-5922_Deep_Learning_Neural_Networks\Projects\Bipolar-Detection-Using-Actigraphy-Dataset\train_exp2_multiscale_extended.py", line 175, in run_grid_search
+    print(f"{"\u2500"*80}")
+    ~~~~~^^^^^^^^^^^^^
+  File "C:\Users\Harsh Mukesh Sharma\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-79: character maps to <undefined>
