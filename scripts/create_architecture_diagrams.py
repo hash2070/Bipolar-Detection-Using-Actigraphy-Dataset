@@ -602,16 +602,16 @@ def fig_all_comparison():
         },
     ]
 
-    # Axes per column
+    # Axes per column (adjusted to give space for title at top)
     axs = []
     for i in range(cols):
-        ax = fig.add_axes([i / cols + 0.01, 0.02, 1/cols - 0.02, 0.88])
+        ax = fig.add_axes([i / cols + 0.01, 0.02, 1/cols - 0.02, 0.83])
         ax.set_xlim(0, 4); ax.set_ylim(-0.3, 13.2)
         ax.axis('off')
         axs.append(ax)
 
     cx = 2.0; W = 3.4; H = 0.72
-    ys = np.linspace(12.5, 0.2, 12)
+    ys = np.linspace(12.3, 0.2, 12)
 
     for ax, arch in zip(axs, architectures):
         # Title block
@@ -633,11 +633,13 @@ def fig_all_comparison():
             if lbl.strip():
                 prev_y = y
 
-    # Column headers (shared title area)
-    fig.text(0.5, 0.97,
-             'All Neural Network Architectures — Side-by-Side Comparison\n'
+    # Column headers (shared title area) - positioned higher to avoid overlap
+    fig.text(0.5, 1.00,
+             'All Neural Network Architectures — Side-by-Side Comparison',
+             ha='center', va='center', fontsize=14, fontweight='bold', color='#2C3E50')
+    fig.text(0.5, 0.95,
              'Bipolar vs. Unipolar Depression Classification from Wrist Actigraphy',
-             ha='center', va='center', fontsize=15, fontweight='bold', color='#2C3E50')
+             ha='center', va='center', fontsize=11, color='#555555', style='italic')
 
     # Legend bar at bottom
     legend_items = [
