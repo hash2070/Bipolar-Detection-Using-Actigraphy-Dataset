@@ -15,7 +15,7 @@ A Deep Learning Study on Mental Health Biomarkers
 **Course:** CSCI 5922 — Neural Networks & Deep Learning, CU Boulder
 
 **Speaker 1 (Introduction):**
-"Hi Everyone. Today we're presenting our Deep Learning project on detecting bipolar disorder from wrist actigraphy data. My name is [Speaker 1] and my teammate's name is [Speaker 2]. Let's hear how we tested whether a simple wearable device can distinguish between two types of depression that clinicians often confuse—bipolar and unipolar depression."
+"Hi Everyone. Today we're presenting our Deep Learning project on detecting bipolar disorder from wrist actigraphy data. My name is Shikha and my teammate's name is Harsh. Let's hear how we tested whether a simple wearable device can distinguish between two types of depression that clinicians often confuse—bipolar and unipolar depression."
 
 ---
 
@@ -35,7 +35,7 @@ Why Does Bipolar Disorder Go Misdiagnosed for 9.5 Years?
 - Activity tracking (actigraphy) offers potential as objective measure
 
 **Speaker 1 (Problem Statement):**
-"Bipolar depression is misdiagnosed as unipolar depression in nine out of ten cases. When doctors prescribe antidepressants to bipolar patients thinking they have unipolar depression, those medications can actually trigger manic episodes—making the condition worse. There's no objective test today. Previous studies using simple statistical summaries like average activity and variance have failed to capture the subtle temporal patterns that might distinguish these conditions. We asked: can a wrist activity tracker combined with machine learning solve this?"
+"Bipolar depression is misdiagnosed as unipolar depression in nine out of ten cases. When doctors prescribe antidepressants to bipolar patients thinking they have unipolar depression, those medications can actually trigger manic episodes—making the condition worse. Previous studies using simple statistical summaries like average activity and variance have failed to capture the subtle temporal patterns that might distinguish these conditions. There's no objective test today. We just asked ourselves: can a wrist activity tracker combined with machine learning solve this?"
 
 ---
 
@@ -83,10 +83,10 @@ What We Found: An Unexpected Truth
 **Results Table:**
 | Approach | Accuracy | Method | Notes |
 |---|---|---|---|
-| Baseline | 88.9% | CNN-LSTM + SMOTE | Likely overfitting |
-| Approach 1 | 60.9% | Logistic Regression | Best practical result |
-| Approach 2 | ~63% | Advanced networks | Minimal improvement |
-| Approach 3 | 77.9% | Multi-Scale Windows | Best statistical approach |
+| Baseline | 88.0% | CNN-LSTM + SMOTE | Illusory — model collapse |
+| Approach 1 | 65.4% | Downsampling (1:1) | Balance alone insufficient |
+| Approach 2 | ~59.7% | Ensemble (3×) | Best architecture variant |
+| Approach 3 | 63.4% | CNN-LSTM 48hr Window | Best reliable result |
 
 **Key Findings:**
 - Baseline 88.9% accuracy but overfitting on tiny test set
@@ -99,7 +99,7 @@ What We Found: An Unexpected Truth
 "When bipolar people are depressed, their activity patterns are indistinguishable from unipolar depression. The biological signal doesn't exist in wrist activity data alone."
 
 **Speaker 2 (Results):**
-"Our best model achieved 88.9% accuracy, but here's the catch—it was overfitting, which means that the model did not try to guess the correct answer, it just memorized the training data and failed on the testing data. The best practical result came from simpler models: our baseline CNN-LSTM got 63%, but a five-feature logistic regression still achieved 60.9%. Most importantly, statistical testing found no meaningful difference between bipolar and unipolar activity patterns. The p-value was 0.893—essentially random. This tells us something critical: wrist activity data alone isn't the answer. Here we can see the results of all the experiments we ran. [Talk about a few facts and figures on the coming slides.]"
+"Our best model achieved 88% accuracy, but here's the catch—it was a model collapse, which means the model predicted everyone as unipolar and never detected a single bipolar case. The best practical result came from Approach 3: a CNN-LSTM with 48-hour windows at 63.4%. Interestingly, a simple five-feature logistic regression still achieved 60.9% nearly matching our most complex networks. Most importantly, statistical testing found no meaningful difference between bipolar and unipolar activity patterns. The p-value of 0.893 was essentially random. This tells us something critical: wrist activity data alone isn't the answer. Here we can see the results of all the experiments we ran. Despite increasing model complexity across all four approaches, accuracy barely budged—staying within a narrow 59 to 65 percent range throughout. Every approach clusters near the 65.2% majority-class baseline shown by the dotted line meaning none of our models meaningfully outperformed simply predicting everyone as unipolar. The green row tells the whole story: our best honest result was 63.4% from a 48-hour CNN-LSTM, and every trustworthy model in this table detected zero bipolar cases. Remarkably, the simple 5-feature Logistic Regression detected 4 out of 8 bipolar patients more than any of our deep learning models achieved.
 
 ---
 
@@ -131,9 +131,7 @@ What's Next?
 - Should be part of multi-modal approach, not standalone diagnostic tool
 
 **Speaker 1 (Takeaway & Future):**
-"Our negative result is actually valuable. It tells researchers where NOT to focus. To truly solve this, we need larger patient groups, sleep data, heart rate variability, and mood reports combined. While wearables can't diagnose bipolar disorder, they're excellent for monitoring treatment response—tracking whether medication actually improves a patient's activity over time. This is our stepping stone toward better mental health biomarkers. 
-
-With this, we would like to conclude our research. Thank You!"
+"Our negative result is actually valuable. It tells researchers where NOT to focus. Activity tracking alone simply cannot diagnose bipolar from unipolar depression—the signal isn't in movement alone. To truly solve this, we need larger patient groups, sleep data, heart rate variability, and mood reports combined. While wearables can't diagnose bipolar disorder, they're excellent for monitoring treatment response—tracking whether medication actually improves a patient's activity over time. This is our stepping stone toward better mental health biomarkers. With this, we would like to conclude our research. Thank You!"
 
 ---
 
