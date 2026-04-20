@@ -1,0 +1,22 @@
+\section{Related Work}
+
+\paragraph{Motor Activity as a Psychiatric Biomarker}
+\begin{itemize}
+    \item \cite{garcia2018depresjon}
+    \item \cite{zanella2019feature}
+\end{itemize}
+The foundational work in this space established that raw motor activity recorded by wrist actigraphs carries measurable differences between healthy individuals and those in depressive episodes. Garcia-Ceja et al.\ \cite{garcia2018depresjon} introduced the Depresjon dataset itself alongside baseline classifiers, while Zanella-Calzada et al.\ \cite{zanella2019feature} extended this line with more systematic feature extraction pipelines. Both groups, however, work exclusively within the classical machine learning paradigm: features are defined by the researcher, computed over fixed time windows, and fed into shallow classifiers. Our work departs from this by letting the model discover its own representations directly from the raw one-minute activity counts, removing the need for any domain-driven feature selection and allowing longer-range temporal patterns to surface.
+
+\paragraph{Deep Learning for Time-Series Classification}
+\begin{itemize}
+    \item \cite{yang2015deep}
+    \item \cite{ordoñez2016deep}
+\end{itemize}
+Convolutional and recurrent architectures have become standard tools for Human Activity Recognition (HAR) on wearable sensor data. Landmark work by Yang et al.\ \cite{yang2015deep} demonstrated that 1D convolutions applied to raw accelerometer streams could match or outperform hand-engineered pipelines on benchmark datasets like UCI HAR. Ordóñez and Roggen \cite{ordoñez2016deep} showed that stacking convolutional layers on top of LSTMs produces particularly robust activity classifiers across a range of body-worn sensors. Importantly, however, HAR models are typically trained on action windows spanning a few seconds walking, sitting, climbing stairs and optimized to classify discrete physical behaviors rather than latent psychiatric states. We adapt this architectural family to a qualitatively different problem: instead of recognizing what a person is doing over ten seconds, we are trying to infer a clinical diagnosis from how their overall movement pattern evolves over ten to fourteen days.
+
+\paragraph{Circadian Rhythm Disruption and Mood Disorders}
+\begin{itemize}
+    \item \cite{boudebesse2014sleep}
+    \item \cite{wehr1987sleep}
+\end{itemize}
+There is a well-established psychiatric literature linking disruptions of the sleep-wake cycle to both bipolar and unipolar depression, but with distinct signatures. Sleep architecture in bipolar depression tends to show earlier sleep onset, longer total sleep duration, and greater day-to-day variability in rest-activity timing compared with unipolar depression \cite{boudebesse2014sleep}. Earlier work by Wehr et al.\ \cite{wehr1987sleep} documented that circadian phase advances are particularly characteristic of bipolar states. This literature motivates our use of an LSTM component specifically: unlike the CNN, which operates locally, the LSTM's gated memory is in principle capable of tracking phase shifts and variability in rhythm across the full recording duration. Our work is the first, to our knowledge, to design an end-to-end architecture around this multi-scale temporal intuition for the bipolar-versus-unipolar differentiation task on the Depresjon data.

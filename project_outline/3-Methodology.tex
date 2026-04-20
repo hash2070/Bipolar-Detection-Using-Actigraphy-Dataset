@@ -1,0 +1,74 @@
+\section{Methodology}
+
+\subsection{Dataset}
+
+We use the Depresjon dataset \cite{garcia2018depresjon}, publicly available through Simula Research Laboratory. The dataset contains continuous wrist actigraphy collected from 55 participants: 32 healthy controls and 23 patients with diagnosed mood disorders (a mix of Bipolar I, Bipolar II, and Unipolar Depressive Disorder). All recordings were made with an Actiwatch (Cambridge Neurotechnology Ltd., model AW4) worn on the right wrist, sampling at 32~Hz using a piezoelectric accelerometer. Activity counts were pre-aggregated to one-minute epochs. Alongside the sensor data, the dataset includes demographic metadata (age, sex, inpatient/outpatient status, marital status, education) and Montgomery--\r{A}sberg Depression Rating Scale (MADRS) scores assessed at the start and end of each recording \cite{garcia2018depresjon}.
+
+Table~\ref{tab:dataset} summarises the key characteristics of each group as reported in the literature \cite{jakobsen2020applying}. The condition group skews older than the control group (mean age 42.8 vs.\ 38.2 years), and both groups wore the device for a comparable average duration of roughly 12.7 days, though individual recordings range from 5 to 20 days. Notably, within the condition group the class split is uneven: 15 participants carry a Unipolar diagnosis and 8 a Bipolar diagnosis, a distributional asymmetry that directly motivates our use of SMOTE and weighted loss in Experiment~2.
+
+\begin{table}[h]
+\centering
+\caption{Participant characteristics of the Depresjon dataset \cite{jakobsen2020applying}.}
+\label{tab:dataset}
+\begin{tabular}{lccc}
+\hline
+\textbf{Characteristic} & \textbf{Controls ($n$=32)} & \textbf{Condition ($n$=23)} \\
+\hline
+Sex (F/M)                   & 20 / 12   & 10 / 13   \\
+Mean age, years (SD)        & 38.2 (13.0) & 42.8 (11.0) \\
+Avg.\ recording, days (SD)  & 12.6 (3.3) & 12.7 (2.8) \\
+Recording range, days       & 8--20     & 5--18     \\
+Mean MADRS at start (SD)    &         & 22.7 (4.8) \\
+Unipolar / Bipolar          &         & 15 / 8    \\
+\hline
+\end{tabular}
+\end{table}
+
+For preprocessing, we standardize each recording to zero mean and unit variance computed over that individual's own time series, which removes inter-subject differences in baseline activity level and lets the model focus on the shape of the temporal signal rather than its absolute magnitude. We then segment each recording into non-overlapping windows of 1,440 minutes (exactly 24 hours) with a stride of 60 minutes during training, giving the model consistent daily-scale context in every input. Each window inherits the diagnosis label of the participant from whom it was drawn.
+
+\subsection{Model Architecture}
+
+The model is a hybrid 1D-CNN-LSTM implemented in PyTorch, designed to capture features at two complementary temporal scales.
+
+\textbf{Local feature extraction (1D-CNN).}
+The first stage of the network applies a stack of 1D convolutional layers directly to the raw activity sequence. A convolutional filter of width $K$ slides along the time axis and computes:
+\begin{equation}
+    h_t^{(1)} = \text{ReLU}\!\left(\sum_{k=0}^{K-1} w_k \cdot x_{t-k} + b\right)
+\end{equation}
+where $x_t$ is the activity count at time $t$, $w_k$ are the learned filter weights, and $b$ is a bias term. Intuitively, each filter learns to fire on a particular local kinetic pattern a burst of restless movement, a prolonged near-zero stretch, a rapid acceleration-deceleration pair. We use two convolutional blocks, each consisting of a 1D convolution (64 filters, kernel size 7), batch normalization, ReLU activation, and max pooling with stride 2. The result is a sequence of higher-level feature vectors, one per temporal location, that encode local movement texture.
+
+\textbf{Long-range dependency tracking (LSTM).}
+The output feature maps from the CNN are then passed as a sequence into a single-layer LSTM with 128 hidden units. The LSTM processes the sequence one step at a time, maintaining a hidden state $h_t$ and a cell state $C_t$ that can carry information forward over many steps. The forget gate, which controls how much past context is retained, is:
+\begin{equation}
+    f_t = \sigma\!\left(W_f \cdot [h_{t-1},\, x_t] + b_f\right)
+\end{equation}
+This gating mechanism allows the LSTM to selectively remember patterns from days earlier in the sequence for instance, if a patient showed fragmented nighttime activity on day 3, that information can remain in the cell state and influence the representation computed on day 7. This is precisely the kind of multi-day integration that static, window-based features cannot provide.
+
+\textbf{Classification head.}
+The final hidden state of the LSTM is passed through two fully connected layers (256 units, then 64 units), each followed by ReLU activation and a Dropout layer with $p = 0.4$ for regularization. The output layer applies a Softmax activation over the target classes. For Experiment~1 (healthy vs.\ depressed), there are two output classes; for Experiment~2 (bipolar vs.\ unipolar), there are also two classes but drawn only from the condition subset of the data.
+
+\subsection{Training Details}
+
+The model is trained using the Adam optimizer with an initial learning rate of $10^{-3}$ and a weight decay of $10^{-4}$. We use cross-entropy loss for both experiments, with class weights inversely proportional to class frequency to partially compensate for the imbalance in Experiment~2. We train for a maximum of 50 epochs with early stopping based on validation loss with a patience of 10 epochs. All experiments use an 80/10/10 train/validation/test split, stratified at the participant level (not the window level) to prevent data leakage.
+
+Table~\ref{tab:arch} summarises the full layer-by-layer architecture and the parameter count at each stage.
+
+\begin{table}[h]
+\centering
+\caption{Layer-by-layer summary of the proposed 1D-CNN-LSTM architecture.}
+\label{tab:arch}
+\begin{tabular}{llll}
+\hline
+\textbf{Stage} & \textbf{Layer} & \textbf{Config} & \textbf{Output shape} \\
+\hline
+\multirow{2}{*}{CNN Block 1} & Conv1D & 64 filters, $k$=7, stride=1 & $T \times 64$ \\
+                             & MaxPool1D & stride=2 & $T/2 \times 64$ \\
+\multirow{2}{*}{CNN Block 2} & Conv1D & 128 filters, $k$=5, stride=1 & $T/2 \times 128$ \\
+                             & MaxPool1D & stride=2 & $T/4 \times 128$ \\
+Sequence                     & LSTM & 128 hidden units & $128$ \\
+FC 1                         & Linear + ReLU + Dropout(0.4) & 256 units & $256$ \\
+FC 2                         & Linear + ReLU + Dropout(0.4) & 64 units & $64$ \\
+Output                       & Linear + Softmax & $C$ classes & $C$ \\
+\hline
+\end{tabular}
+\end{table}
