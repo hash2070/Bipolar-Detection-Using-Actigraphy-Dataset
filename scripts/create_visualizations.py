@@ -297,23 +297,25 @@ def plot_statistical_significance(res_3a):
                 palette={'Bipolar': COLORS['bipolar'], 'Unipolar': COLORS['unipolar']},
                 width=0.4, ax=axes[0], fliersize=0)
     sns.stripplot(data=data_combined, x='Group', y='Variability',
-                  palette={'Bipolar': COLORS['bipolar'], 'Unipolar': COLORS['unipolar']},
-                  jitter=True, size=8, alpha=0.7, ax=axes[0])
+                  jitter=True, size=8, alpha=0.9, ax=axes[0],
+                  color='white', edgecolor='black', linewidth=0.8)
 
     # Annotate means
     axes[0].axhline(y=results['bipolar_mean'], color=COLORS['bipolar'],
-                    linestyle='--', alpha=0.5, linewidth=1.2)
+                    linestyle='--', alpha=0.8, linewidth=1.5)
     axes[0].axhline(y=results['unipolar_mean'], color=COLORS['unipolar'],
-                    linestyle='--', alpha=0.5, linewidth=1.2)
+                    linestyle='--', alpha=0.8, linewidth=1.5)
 
     axes[0].set_title('Activity Variability Distribution\nBipolar vs Unipolar', fontweight='bold')
     axes[0].set_ylabel('Daily Activity Variability (std of daily means)')
     axes[0].text(0, results['bipolar_mean'] + 0.005,
                  f"mean={results['bipolar_mean']:.3f}", ha='center', fontsize=9,
-                 color=COLORS['bipolar'], fontweight='bold')
+                 color='black', fontweight='bold',
+                 bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
     axes[0].text(1, results['unipolar_mean'] + 0.005,
                  f"mean={results['unipolar_mean']:.3f}", ha='center', fontsize=9,
-                 color=COLORS['unipolar'], fontweight='bold')
+                 color='black', fontweight='bold',
+                 bbox=dict(facecolor='white', alpha=0.7, edgecolor='none', pad=1))
     axes[0].grid(axis='y', alpha=0.3)
     axes[0].spines['top'].set_visible(False)
     axes[0].spines['right'].set_visible(False)

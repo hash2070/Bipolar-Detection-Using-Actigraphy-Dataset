@@ -496,11 +496,11 @@ def fig_classical_ml():
 # ── FIGURE P: All 5 Neural Architectures Side-by-Side ─────────────────────
 def fig_all_comparison():
     """Compact comparison of all 5 neural architectures in one figure."""
-    fig = plt.figure(figsize=(22, 14))
+    fig = plt.figure(figsize=(26, 16))
     fig.patch.set_facecolor(CLR['bg'])
 
     cols = 5
-    col_w = 22 / cols
+    col_w = 26 / cols
     col_xs = [col_w * i + col_w / 2 for i in range(cols)]
 
     # Data for each architecture
@@ -606,21 +606,23 @@ def fig_all_comparison():
     axs = []
     for i in range(cols):
         ax = fig.add_axes([i / cols + 0.01, 0.02, 1/cols - 0.02, 0.83])
-        ax.set_xlim(0, 4); ax.set_ylim(-0.3, 13.2)
+        ax.set_xlim(0, 4); ax.set_ylim(-0.3, 13.8)
         ax.axis('off')
         axs.append(ax)
 
     cx = 2.0; W = 3.4; H = 0.72
-    ys = np.linspace(12.3, 0.2, 12)
+    ys = np.linspace(11.3, 0.2, 12)
 
     for ax, arch in zip(axs, architectures):
         # Title block
-        ax.text(cx, 12.95, arch['title'], ha='center', va='center',
+        ax.text(cx, 13.25, arch['title'], ha='center', va='center',
                 fontsize=11, fontweight='bold', color=arch['title_color'],
+                clip_on=False,
                 bbox=dict(facecolor='#F8F9FA', edgecolor=arch['title_color'],
                           boxstyle='round,pad=0.35', linewidth=2.5))
-        ax.text(cx, 11.85, arch['subtitle'], ha='center', va='center',
+        ax.text(cx, 12.1, arch['subtitle'], ha='center', va='center',
                 fontsize=8.5, color='#555555', style='italic',
+                clip_on=False,
                 bbox=dict(facecolor='white', edgecolor='lightgray',
                           boxstyle='round,pad=0.25', linewidth=1))
 

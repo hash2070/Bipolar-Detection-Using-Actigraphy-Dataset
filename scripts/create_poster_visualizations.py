@@ -115,8 +115,8 @@ def fig_dataset_overview(scores):
         axes[2].scatter([x_pos + j for j in jitter], subset, color=color, alpha=0.8, s=80, zorder=5)
         axes[2].plot([x_pos - 0.2, x_pos + 0.2], [subset.mean(), subset.mean()],
                      color=color, linewidth=3, zorder=6)
-        axes[2].text(x_pos, subset.mean() + 0.8, f"μ={subset.mean():.1f}", ha='center',
-                     fontsize=9, color=color, fontweight='bold')
+        axes[2].text(x_pos + 0.25, subset.mean(), f"μ={subset.mean():.1f}", ha='left',
+                     va='center', fontsize=9, color=color, fontweight='bold', zorder=10)
     axes[2].set_xlim(0.5, 2.5)
     axes[2].set_xticks([1, 2])
     axes[2].set_xticklabels(['Bipolar\n(n=8)', 'Unipolar\n(n=15)'], fontsize=11)
@@ -125,9 +125,11 @@ def fig_dataset_overview(scores):
     axes[2].grid(axis='y', alpha=0.3)
     axes[2].spines['top'].set_visible(False)
     axes[2].spines['right'].set_visible(False)
-    axes[2].text(1.5, 9, 'Similar depression severity\nin both groups', ha='center',
-                 fontsize=9, style='italic', color='gray',
-                 bbox=dict(boxstyle='round', facecolor='#f8f9fa', alpha=0.8))
+    # annotation placed in the empty center column between the two groups
+    axes[2].text(1.5, axes[2].get_ylim()[0] + 0.5, 'Similar depression severity\nin both groups',
+                 ha='center', va='bottom',
+                 fontsize=9, style='italic', color='gray', zorder=10,
+                 bbox=dict(boxstyle='round', facecolor='#f8f9fa', alpha=0.95))
 
     plt.suptitle('The Depresjon Dataset: Who Were the Participants?',
                  fontsize=14, fontweight='bold', y=1.01)
@@ -201,29 +203,27 @@ def fig_model_complexity():
     fig, ax = plt.subplots(figsize=(10, 7))
 
     models = [
-        # (name, params, accuracy, color, marker, annotate_side)
-        ('Majority\nBaseline',          0,       65.2, C['neutral'],  'D',  'right'),
-        ('Logistic\nRegression\n(1C)',  5,       60.9, C['unipolar'], 's',  'right'),
-        ('XGBoost\n(1B)',               500,     39.1, C['accent'],   's',  'right'),
-        ('Ensemble\n(2d)',              671046,  59.7, C['dark'],     '^',  'left'),
-        ('RNN-LSTM\n(2c)',              210818,  42.3, 'gray',        'v',  'right'),
-        ('Attention\n(2b)',             223811,  48.2, '#8E44AD',     'o',  'right'),
-        ('BiLSTM\n(2a)',                388546,  55.4, '#16A085',     'o',  'right'),
-        ('CNN-LSTM\nBaseline',          223682,  65.4, C['dark'],     'o',  'right'),
-        ('CNN-LSTM\n48hr (1A)',         223682,  63.4, C['bipolar'],  '*',  'right'),
-        ('CNN-LSTM\n24hr safe\n(1A)',   223682,  90.7, '#E67E22',     'P',  'right'),
+        # (name, params, accuracy, color, marker, x_pt_offset, y_pt_offset, ha)
+        ('Majority\nBaseline',        0,       65.2, C['neutral'],  'D',   8,   0, 'left'),
+        ('Logistic\nRegression\n(1C)',5,       60.9, C['unipolar'], 's',   8,   0, 'left'),
+        ('XGBoost\n(1B)',             500,     39.1, C['accent'],   's',   8,   0, 'left'),
+        ('RNN-LSTM\n(2c)',            210818,  42.3, 'gray',        'v',   8,   0, 'left'),
+        ('Attention\n(2b)',           223811,  48.2, '#8E44AD',     'o',   8, -14, 'left'),
+        ('CNN-LSTM\nBaseline',        223682,  65.4, C['dark'],     'o', -10,   0, 'right'),
+        ('CNN-LSTM\n48hr (1A)',       223682,  63.4, C['bipolar'],  '*',   8,   0, 'left'),
+        ('CNN-LSTM\n24hr safe\n(1A)', 223682,  90.7, '#E67E22',     'P',   8,   0, 'left'),
+        ('BiLSTM\n(2a)',              388546,  55.4, '#16A085',     'o',   8, -10, 'left'),
+        ('Ensemble\n(2d)',            671046,  59.7, C['dark'],     '^',   8,  10, 'left'),
     ]
 
     log_params = []
-    for name, params, acc, color, marker, side in models:
+    for name, params, acc, color, marker, xoff, yoff, ha in models:
         x = np.log10(params + 1)
         log_params.append(x)
         ax.scatter(x, acc, color=color, marker=marker, s=200 if marker == '*' else 130,
                    zorder=5, edgecolors='white', linewidth=1.5)
-        offset = 0.12 if side == 'right' else -0.12
-        ha = 'left' if side == 'right' else 'right'
         ax.annotate(name, (x, acc), textcoords='offset points',
-                    xytext=(8 if side == 'right' else -8, 0),
+                    xytext=(xoff, yoff),
                     ha=ha, va='center', fontsize=8, color=color)
 
     # Baseline reference
@@ -300,7 +300,7 @@ def fig_all_approaches_comprehensive(r1a, r1b, r1c, r3a):
                 f'{acc:.1f}%', va='center', ha='left', fontweight='bold', fontsize=9)
         if note:
             ax.text(1, bar.get_y() + bar.get_height() / 2,
-                    note, va='center', ha='left', fontsize=8, color='#7F8C8D', style='italic')
+                    note, va='center', ha='left', fontsize=8, color='#2C3E50', style='italic')
 
     ax.set_yticks(y)
     ax.set_yticklabels(labels, fontsize=9)
@@ -509,26 +509,25 @@ def fig_sample_size_context():
 
     # Reference points from literature (approximate)
     papers = [
-        # (study_name, n_minority, accuracy, marker_size_factor, color, our_work)
-        ('Jakobsen 2020\n(this dataset,\nhand-crafted)', 8, 82, 200, C['unipolar'], False),
-        ('Ortiz 2015\n(Bipolar EEG)', 20, 78, 300, '#8E44AD', False),
-        ('Busk 2020\n(Smartphone,\nBipolar)', 47, 71, 400, '#27AE60', False),
-        ('Reinertsen 2021\n(ECG, Bipolar)', 22, 74, 300, '#F39C12', False),
-        ('Our Work\n(CNN-LSTM 48hr)', 8, 63, 200, C['bipolar'], True),
-        ('Our Work\n(LogReg 5 feat)', 8, 61, 200, C['bipolar'], True),
-        ('Hypothetical\n(n=50 bipolar)', 50, 78, 500, '#E74C3C', False),
-        ('Hypothetical\n(n=100 bipolar)', 100, 85, 600, '#C0392B', False),
+        # (study_name, n_minority, accuracy, marker_size_factor, color, our_work, xoff, yoff, ha)
+        ('Jakobsen 2020\n(this dataset,\nhand-crafted)', 8, 82, 200, C['unipolar'], False,  8,  -5, 'left'),
+        ('Ortiz 2015\n(Bipolar, EEG)',                  20, 78, 300, '#8E44AD',     False,   8,   8, 'left'),
+        ('Reinertsen 2021\n(ECG, Bipolar)',              22, 74, 300, '#F39C12',     False,  8,  -14, 'left'),
+        ('Busk 2020\n(Smartphone,\nBipolar)',            47, 71, 400, '#27AE60',     False,  8,    5, 'left'),
+        ('Our Work\n(CNN-LSTM 48hr)',                     8, 63, 200, C['bipolar'],  True,   8,    5, 'left'),
+        ('Our Work\n(LogReg 5 feat)',                     8, 61, 200, C['bipolar'],  True,   8,  -14, 'left'),
+        ('Hypothetical\n(n=50 bipolar)',                 50, 78, 500, '#E74C3C',     False,  8,    5, 'left'),
+        ('Hypothetical*\n(n=100 bipolar)',              100, 85, 600, '#C0392B',     False, -10,  -5, 'right'),
     ]
 
-    for name, n, acc, sz, color, ours in papers:
+    for name, n, acc, sz, color, ours, xoff, yoff, ha in papers:
         edgecolor = C['bipolar'] if ours else 'white'
         linewidth = 3 if ours else 1.5
         ax.scatter(n, acc, s=sz, color=color, alpha=0.8,
                    edgecolors=edgecolor, linewidth=linewidth, zorder=5)
-        va = 'bottom' if acc < 75 else 'top'
         ax.annotate(name, (n, acc), textcoords='offset points',
-                    xytext=(8, 5 if va == 'bottom' else -5),
-                    ha='left', va=va, fontsize=8,
+                    xytext=(xoff, yoff),
+                    ha=ha, va='center', fontsize=8,
                     color=C['bipolar'] if ours else C['dark'],
                     fontweight='bold' if ours else 'normal')
 
@@ -672,6 +671,7 @@ def fig_three_punchlines(r3a):
     for bar, val in zip(bars, vals_e):
         ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
                  f'|d|={val:.2f}', ha='center', fontsize=9, fontweight='bold')
+    ax1.set_xticklabels(labels_e, fontsize=8, rotation=12, ha='right')
     ax1.set_ylabel('Effect Size |Cohen\'s d|')
     ax1.set_ylim(0, 1.0)
     ax1.set_title('Punchline 1:\nWe Quantified the Problem',
@@ -721,7 +721,7 @@ def fig_three_punchlines(r3a):
     ax3.set_ylim(0, 85)
     ax3.set_title('Punchline 3:\nSimple Rivals Complex',
                   fontweight='bold', fontsize=11, color=C['dark'])
-    ax3.text(1, 30,
+    ax3.text(1, 52,
              'A 5-parameter logistic\nregression (60.9%) nearly\nmatches a 223K-parameter\nneural network (63.4%).',
              ha='center', fontsize=9, color=C['dark'],
              bbox=dict(boxstyle='round', facecolor='#FEF9E7', alpha=0.9))
